@@ -4,6 +4,7 @@ import express from 'express'
 import RateLimit from 'express-rate-limit'
 import passport from 'passport'
 import path from 'path'
+import { expressMiddleware } from '@apollo/server/express4'
 
 import authorization from '../middlewares/auth'
 

@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "type": "module",
+  "scripts": {
+    "dev": "ts-node-dev --no-notify --respawn --transpile-only api/index.ts",
+    "start": "node dist/server",
+    "clean": "rm -rf dist"
+  },
   "dependencies": {
     "@apollo/server": "4.10.4",
     "@prisma/client": "^5.18.0",
