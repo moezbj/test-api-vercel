@@ -1,4 +1,4 @@
-import { gql } from 'graphql-modules'
+import { gql } from "graphql-modules";
 
 export const AuthType = gql`
   type Mutation {
@@ -12,6 +12,7 @@ export const AuthType = gql`
     logout(token: String): String
     forgotPassword(email: String): String
     resetPassword(password: String, confirm: String, token: String): String
+    updateLanguages(lang: LANGUAGE_TYPE_INPUT): String
   }
 
   type Auth {
@@ -28,4 +29,9 @@ export const AuthType = gql`
     user: User
     token: Token
   }
-`
+  enum LANGUAGE_TYPE_INPUT{
+    fr
+    en
+    ar
+  }
+`;

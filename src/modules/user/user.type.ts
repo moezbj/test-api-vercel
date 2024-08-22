@@ -1,4 +1,4 @@
-import { gql } from 'graphql-modules'
+import { gql } from "graphql-modules";
 
 export const User = gql`
   type Query {
@@ -9,5 +9,11 @@ export const User = gql`
     firstName: String
     lastName: String
     email: String
+    language: LANGUAGE_TYPE_USER
   }
-`
+  enum LANGUAGE_TYPE_USER{
+    fr
+    en
+    ar
+  }
+`;
