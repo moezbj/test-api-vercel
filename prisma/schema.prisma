@@ -16,6 +16,9 @@ model User {
   lastName     String
   Appointments Appointment[]
   language     LANGUAGE_TYPE @default(fr)
+  startWork    String        @default("08:00:00")
+  endWork      String        @default("18:00:00")
+  slotDuration String        @default("00:15:00")
   Fees         Fees[]
 }
 
@@ -49,7 +52,7 @@ model Fees {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
   date   DateTime
   note   String
-  amount  Int
+  amount Int
   user   User     @relation(fields: [userId], references: [id])
   userId String   @db.ObjectId
 }

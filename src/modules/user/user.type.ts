@@ -10,8 +10,11 @@ export const User = gql`
     lastName: String
     email: String
     language: LANGUAGE_TYPE_USER
+    startWork: String
+    endWork: String
+    slotDuration: String
   }
-  enum LANGUAGE_TYPE_USER{
+  enum LANGUAGE_TYPE_USER {
     fr
     en
     ar

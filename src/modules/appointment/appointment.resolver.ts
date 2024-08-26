@@ -295,14 +295,12 @@ export const appointmentResolver = {
       });
       if (!existUser) throw new Error("id not provided");
       const formatDate1 = formatISO(args.date);
-      console.log("formatDate1", new Date().getTime());
 
       const n = new Date(formatDate1);
       const formattedStart = format(n, "yyyy-MM-dd");
       const formattedEnd = format(n, "yyyy-MM-dd");
       const formatTime = format(new Date().getTime(), "kk:mm:ss");
-      console.log("formatTime", formatTime);
-      console.log("test", isSameDay(new Date(), formatDate1));
+
       const time = isSameDay(new Date(), formatDate1) ? formatTime : "00:00:00";
 
       const getAppointments = await prisma.appointment.findMany({
@@ -315,7 +313,6 @@ export const appointmentResolver = {
           },
         },
       });
-      console.log("getAppointments", getAppointments);
 
       const [canceledAppointment] = await prisma.$transaction([
         prisma.appointment.updateMany({
@@ -325,7 +322,6 @@ export const appointmentResolver = {
           },
         }),
       ]);
-      console.log("canceledAppointment", canceledAppointment);
       return "canceled";
     },
   },

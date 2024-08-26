@@ -13,6 +13,11 @@ export const AuthType = gql`
     forgotPassword(email: String): String
     resetPassword(password: String, confirm: String, token: String): String
     updateLanguages(lang: LANGUAGE_TYPE_INPUT): String
+    updateWork(
+      startWork: String
+      endWork: String
+      slotDuration: String
+    ): updateWorkResponse
   }
 
   type Auth {
@@ -29,7 +34,12 @@ export const AuthType = gql`
     user: User
     token: Token
   }
-  enum LANGUAGE_TYPE_INPUT{
+  type updateWorkResponse {
+    startWork: String
+    endWork: String
+    slotDuration: String
+  }
+  enum LANGUAGE_TYPE_INPUT {
     fr
     en
     ar

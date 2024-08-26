@@ -6,6 +6,7 @@ import { generateToken, isTokenValid } from "../../middlewares/generateToken";
 import { LANGUAGE_TYPE, TOKEN_TYPE } from "@prisma/client";
 import { sandMail } from "../../utils/mailer";
 import { clientUrl, mailExpiration } from "../../config/vars";
+import { format, formatISO } from "date-fns";
 
 interface AuthType {
   email: string;
@@ -53,6 +54,9 @@ export const authResolves = {
           firstName: args.firstName,
           lastName: args.lastName,
           password: args.password,
+          language: "fr",
+          startWork: "08:00:00",
+          endWork: "18:00:00",
         },
       });
       const token = await generateTokenResponse(createdUser.id);
@@ -151,6 +155,41 @@ export const authResolves = {
         },
       });
       return args.lang;
+    },
+    updateWork: async (parent: any, args: any, contextValue: any) => {
+      const getIdUser = await getUser(contextValue.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
+      const existUser = await prisma.user.findFirst({
+        where: {
+          id: getIdUser.sub?.toString(),
+        },
+      });
+      if (!existUser) throw new Error("user dosen't exist");
+
+      const formatDateStart = formatISO(args.startWork);
+      const timeStart = new Date(formatDateStart);
+      const formattedStart = format(timeStart, "yyyy-MM-dd kk:mm:ss");
+
+
+      const formatDateEnd = formatISO(args.endWork);
+      const timeEnd = new Date(formatDateEnd);
+      const formattedEnd = format(timeEnd, "yyyy-MM-dd kk:mm:ss");
+
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: existUser.id,
+        },
+        data: {
+          startWork: formattedStart,
+          endWork: formattedEnd,
+          slotDuration: args.slotDuration,
+        },
+      });
+      return {
+        startWork: updatedUser.startWork,
+        endWork: updatedUser.endWork,
+        slotDuration: updatedUser.slotDuration,
+      };
     },
   },
   /* Query: {
