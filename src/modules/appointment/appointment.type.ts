@@ -31,6 +31,11 @@ export const AppointmentType = gql`
     note: String
   }
 
+  type DetailedGain {
+    appointments: [Appointment]
+    fees: [Fee]
+  }
+
   type Query {
     appointment(id: ID!): Appointment
     appointments(
@@ -40,10 +45,14 @@ export const AppointmentType = gql`
       status: String
     ): [Appointment]
     totalGain(date: String): String
+    totalGainDetailed(startTime: String, endTime: String): DetailedGain
+
   }
   type Mutation {
     createAppointment(input: NewAppointmentInput!): Appointment
     updateAppointment(input: UpdateAppointmentInput!): Appointment
     deleteAppointment(id: ID!): String
+    cancelAll(date: String): String
+
   }
 `;

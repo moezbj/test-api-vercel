@@ -1,8 +1,7 @@
-import { APPOINTMENT_TYPE } from "@prisma/client";
+import { Appointment, APPOINTMENT_TYPE } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { getUser } from "../../middlewares/getUser";
-import { formatISO, format } from "date-fns";
-
+import { formatISO, format, isSameDay } from "date-fns";
 export const appointmentResolver = {
   Query: {
     appointments: async (
@@ -127,6 +126,57 @@ export const appointmentResolver = {
         : 0;
       return res - fees;
     },
+    totalGainDetailed: async (
+      parent: Record<string, any>,
+      args: Record<string, any>,
+      context: any
+    ) => {
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
+      const existUser = await prisma.user.findFirst({
+        where: {
+          id: getIdUser.sub?.toString(),
+        },
+      });
+      if (!existUser) throw new Error("id not provided");
+
+      const formatDateStart = formatISO(args.startTime);
+      const DateStart = new Date(formatDateStart);
+
+      const formatDateEnd = formatISO(args.endTime);
+      const DateEnd = new Date(formatDateEnd);
+
+      const formattedStart = format(DateStart, "yyyy-MM-dd");
+      const formattedEnd = format(DateEnd, "yyyy-MM-dd");
+
+      const [listAppointment, feesList] = await prisma.$transaction([
+        prisma.appointment.findMany({
+          where: {
+            userId: args.userId,
+            status: APPOINTMENT_TYPE.DONE,
+            startTime: {
+              gte: new Date(`${formattedStart}T00:00:00`),
+            },
+            endTime: {
+              lte: new Date(`${formattedEnd}T23:59:59.999`),
+            },
+          },
+        }),
+        prisma.fees.findMany({
+          where: {
+            date: {
+              gte: new Date(`${formattedStart}T00:00:00`),
+              lte: new Date(`${formattedEnd}T23:59:59.999`),
+            },
+          },
+        }),
+      ]);
+
+      return {
+        appointments: listAppointment,
+        fees: feesList,
+      };
+    },
   },
   Mutation: {
     createAppointment: async (parent: undefined, args: any, context: any) => {
@@ -234,6 +284,49 @@ export const appointmentResolver = {
         },
       });
       return "deleted";
+    },
+    cancelAll: async (parent: undefined, args: any, context: any) => {
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
+      const existUser = await prisma.user.findFirst({
+        where: {
+          id: getIdUser.sub?.toString(),
+        },
+      });
+      if (!existUser) throw new Error("id not provided");
+      const formatDate1 = formatISO(args.date);
+      console.log("formatDate1", new Date().getTime());
+
+      const n = new Date(formatDate1);
+      const formattedStart = format(n, "yyyy-MM-dd");
+      const formattedEnd = format(n, "yyyy-MM-dd");
+      const formatTime = format(new Date().getTime(), "kk:mm:ss");
+      console.log("formatTime", formatTime);
+      console.log("test", isSameDay(new Date(), formatDate1));
+      const time = isSameDay(new Date(), formatDate1) ? formatTime : "00:00:00";
+
+      const getAppointments = await prisma.appointment.findMany({
+        where: {
+          startTime: {
+            gte: new Date(`${formattedStart}T${time}`),
+          },
+          endTime: {
+            lte: new Date(`${formattedEnd}T23:59:59.999`),
+          },
+        },
+      });
+      console.log("getAppointments", getAppointments);
+
+      const [canceledAppointment] = await prisma.$transaction([
+        prisma.appointment.updateMany({
+          where: { id: { in: getAppointments.map((s) => s.id) } },
+          data: {
+            status: APPOINTMENT_TYPE.CANCELED,
+          },
+        }),
+      ]);
+      console.log("canceledAppointment", canceledAppointment);
+      return "canceled";
     },
   },
 };
