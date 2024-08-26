@@ -1,4 +1,4 @@
-import { gql } from 'graphql-modules'
+import { gql } from "graphql-modules";
 
 export const AppointmentType = gql`
   type Appointment {
@@ -39,10 +39,11 @@ export const AppointmentType = gql`
       endTime: String
       status: String
     ): [Appointment]
+    totalGain(date: String): String
   }
   type Mutation {
     createAppointment(input: NewAppointmentInput!): Appointment
     updateAppointment(input: UpdateAppointmentInput!): Appointment
     deleteAppointment(id: ID!): String
   }
-`
+`;

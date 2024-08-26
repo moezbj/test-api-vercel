@@ -1,42 +1,40 @@
-import { APPOINTMENT_TYPE } from '@prisma/client'
-import prisma from '../../config/prisma'
-import { getUser } from '../../middlewares/getUser'
+import { APPOINTMENT_TYPE } from "@prisma/client";
+import prisma from "../../config/prisma";
+import { getUser } from "../../middlewares/getUser";
+import { formatISO, format } from "date-fns";
 
 export const appointmentResolver = {
   Query: {
     appointments: async (
       parent: Record<string, any>,
       args: Record<string, any>,
-      context: any,
+      context: any
     ) => {
-      const getIdUser = await getUser(context.authorization.split(' ')[1])
-      if (!getIdUser) throw new Error('id not provided')
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
         where: {
           id: getIdUser.sub?.toString(),
         },
-      })
-      if (!existUser) throw new Error('id not provided')
-      console.log('args.name', args.name)
+      });
+      if (!existUser) throw new Error("id not provided");
       const arg: {
-        userId: string
-        patient?: { name: string }
-        startTime?: string
-        endTime?: string
-        status?: 'DONE' | 'CANCELED' | 'PENDING'
+        userId: string;
+        patient?: { name: string };
+        startTime?: string;
+        status?: "DONE" | "CANCELED" | "PENDING";
       } = {
         userId: existUser.id,
-      }
+      };
 
       if (args.name) {
         arg.patient = {
           name: args.name,
-        }
+        };
       }
       if (args.status) {
-        arg.status = args.status
+        arg.status = args.status;
       }
-
       const list = await prisma.appointment.findMany({
         where: {
           userId: arg.userId,
@@ -56,57 +54,106 @@ export const appointmentResolver = {
         include: {
           patient: true,
         },
-      })
-      return list
+      });
+      return list;
     },
     appointment: async (
       parent: Record<string, any>,
       args: Record<string, any>,
-      context: any,
+      context: any
     ) => {
-      const getIdUser = await getUser(context.authorization.split(' ')[1])
-      if (!getIdUser) throw new Error('id not provided')
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
         where: {
           id: getIdUser.sub?.toString(),
         },
-      })
-      if (!existUser) throw new Error("user dosen't exist")
+      });
+      if (!existUser) throw new Error("user dosen't exist");
       const appointment = await prisma.appointment.findFirst({
         where: {
           id: args.id,
           userId: existUser.id,
         },
-      })
-      return appointment
+      });
+      return appointment;
     },
-  },
-  Mutation: {
-    createAppointment: async (parent: undefined, args: any, context: any) => {
-      const arg = args.input
-      const getIdUser = await getUser(context.authorization.split(' ')[1])
-      if (!getIdUser) throw new Error('id not provided')
+    totalGain: async (
+      parent: Record<string, any>,
+      args: Record<string, any>,
+      context: any
+    ) => {
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
         where: {
           id: getIdUser.sub?.toString(),
         },
-      })
-      if (!existUser) throw new Error('id not provided')
+      });
+      if (!existUser) throw new Error("id not provided");
+
+      const formatDate1 = formatISO(args.date);
+      const n = new Date(formatDate1);
+      const formattedStart = format(n, "yyyy-MM-dd");
+      const formattedEnd = format(n, "yyyy-MM-dd");
+
+      const [listAppointment, feesList] = await prisma.$transaction([
+        prisma.appointment.findMany({
+          where: {
+            userId: args.userId,
+            status: APPOINTMENT_TYPE.DONE,
+            startTime: {
+              gte: new Date(`${formattedStart}T00:00:00`),
+            },
+            endTime: {
+              lte: new Date(`${formattedEnd}T23:59:59.999`),
+            },
+          },
+        }),
+        prisma.fees.findMany({
+          where: {
+            date: {
+              gte: new Date(`${formattedEnd}T00:00:00`),
+              lte: new Date(`${formattedEnd}T23:59:59.999`),
+            },
+          },
+        }),
+      ]);
+      const res = listAppointment.length
+        ? listAppointment.map((e) => e.price).reduce((acc, item) => item + acc)
+        : 0;
+      const fees = feesList.length
+        ? feesList.map((e) => e.amount).reduce((acc, item) => item + acc)
+        : 0;
+      return res - fees;
+    },
+  },
+  Mutation: {
+    createAppointment: async (parent: undefined, args: any, context: any) => {
+      const arg = args.input;
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
+      const existUser = await prisma.user.findFirst({
+        where: {
+          id: getIdUser.sub?.toString(),
+        },
+      });
+      if (!existUser) throw new Error("id not provided");
 
       const existAppointment = await prisma.appointment.findFirst({
         where: {
           startTime: arg.startTime,
         },
-      })
-      if (existAppointment) throw new Error('existAppointment already exist')
+      });
+      if (existAppointment) throw new Error("existAppointment already exist");
 
       const existPatient = await prisma.patient.findFirst({
         where: {
           id: arg.patientId,
         },
-      })
+      });
 
-      if (!existPatient) throw new Error('patient already exist')
+      if (!existPatient) throw new Error("patient already exist");
       const [createAppointment] = await prisma.$transaction([
         prisma.appointment.create({
           data: {
@@ -121,35 +168,35 @@ export const appointmentResolver = {
             note: arg.note,
           },
         }),
-      ])
-      console.log('createAppointment', createAppointment)
-      return createAppointment
+      ]);
+      console.log("createAppointment", createAppointment);
+      return createAppointment;
     },
     updateAppointment: async (parent: undefined, args: any, context: any) => {
-      const arg = args.input
-      const getIdUser = await getUser(context.authorization.split(' ')[1])
-      if (!getIdUser) throw new Error('id not provided')
+      const arg = args.input;
+      const getIdUser = await getUser(context.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
         where: {
           id: getIdUser.sub?.toString(),
         },
-      })
-      if (!existUser) throw new Error('id not provided')
+      });
+      if (!existUser) throw new Error("id not provided");
 
       const existAppointment = await prisma.appointment.findFirst({
         where: {
           id: arg.id,
         },
-      })
-      if (!existAppointment) throw new Error('Appointment does not exist')
+      });
+      if (!existAppointment) throw new Error("Appointment does not exist");
 
       const existPatient = await prisma.patient.findFirst({
         where: {
           id: arg.patientId,
         },
-      })
+      });
 
-      if (!existPatient) throw new Error('patient already exist')
+      if (!existPatient) throw new Error("patient already exist");
       const [updateAppointment] = await prisma.$transaction([
         prisma.appointment.update({
           where: {
@@ -167,17 +214,17 @@ export const appointmentResolver = {
             note: arg.note,
           },
         }),
-      ])
-      console.log('updateAppointment', updateAppointment)
-      return updateAppointment
+      ]);
+      console.log("updateAppointment", updateAppointment);
+      return updateAppointment;
     },
     deleteAppointment: async (parent: undefined, args: any, context: any) => {
       const existAppointment = await prisma.appointment.findFirst({
         where: {
           id: args.id,
         },
-      })
-      if (!existAppointment) throw new Error('Appointment does not exist')
+      });
+      if (!existAppointment) throw new Error("Appointment does not exist");
       await prisma.appointment.update({
         where: {
           id: args.id,
@@ -185,8 +232,8 @@ export const appointmentResolver = {
         data: {
           status: APPOINTMENT_TYPE.CANCELED,
         },
-      })
-      return 'deleted'
+      });
+      return "deleted";
     },
   },
-}
+};
