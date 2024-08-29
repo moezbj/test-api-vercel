@@ -8,18 +8,20 @@ generator client {
 }
 
 model User {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  isActive     Boolean       @default(true)
-  email        String        @unique
-  password     String
-  firstName    String
-  lastName     String
-  Appointments Appointment[]
-  language     LANGUAGE_TYPE @default(fr)
-  startWork    String        @default("08:00:00")
-  endWork      String        @default("18:00:00")
-  slotDuration String        @default("00:15:00")
-  Fees         Fees[]
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  isActive        Boolean       @default(true)
+  freeTrailAcount Boolean       @default(true)
+  email           String        @unique
+  password        String
+  firstName       String
+  lastName        String
+  Appointments    Appointment[]
+  language        LANGUAGE_TYPE @default(fr)
+  startWork       String        @default("08:00:00")
+  endWork         String        @default("18:00:00")
+  slotDuration    String        @default("00:15:00")
+  Fees            Fees[]
+  Patient         Patient[]
 }
 
 model Patient {
@@ -30,6 +32,8 @@ model Patient {
   insurance    String
   phone        String
   note         String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String        @db.ObjectId
   Appointments Appointment[]
 }
 
