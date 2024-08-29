@@ -23,48 +23,51 @@ model User {
   withResoures    Boolean       @default(false)
   Fees            Fees[]
   Patient         Patient[]
+  Colleague       Colleague[]
 }
 
-model Collaborator {
+model Colleague {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   Patient      Patient[]
   Appointments Appointment[]
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String        @db.ObjectId
   email        String        @unique
-  firstName    String
-  lastName     String
+  phone        String        @unique
+  name    String
 }
 
 model Patient {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  email          String        @unique
-  name           String
-  age            String
-  insurance      String
-  phone          String
-  note           String
-  user           User          @relation(fields: [userId], references: [id])
-  userId         String        @db.ObjectId
-  Appointments   Appointment[]
-  Collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
-  collaboratorId String?       @db.ObjectId
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  email        String        @unique
+  name         String
+  age          String
+  insurance    String
+  phone        String
+  note         String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String        @db.ObjectId
+  Appointments Appointment[]
+  Colleague    Colleague?    @relation(fields: [colleaguerId], references: [id])
+  colleaguerId String?       @db.ObjectId
 }
 
 model Appointment {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  patient        Patient          @relation(fields: [patientId], references: [id])
-  patientId      String           @db.ObjectId
-  startTime      DateTime
-  endTime        DateTime
-  note           String
-  price          Int
-  resource       String?
-  user           User             @relation(fields: [userId], references: [id])
-  userId         String           @db.ObjectId
-  status         APPOINTMENT_TYPE
-  Collaborator   Collaborator?    @relation(fields: [collaboratorId], references: [id])
-  collaboratorId String?          @db.ObjectId
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  patient      Patient          @relation(fields: [patientId], references: [id])
+  patientId    String           @db.ObjectId
+  startTime    DateTime
+  endTime      DateTime
+  note         String
+  price        Int
+  resource     String?
+  user         User             @relation(fields: [userId], references: [id])
+  userId       String           @db.ObjectId
+  status       APPOINTMENT_TYPE
+  Colleague    Colleague?       @relation(fields: [colleaguerId], references: [id])
+  colleaguerId String?          @db.ObjectId
 }
 
 model Fees {

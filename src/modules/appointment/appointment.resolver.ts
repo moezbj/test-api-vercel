@@ -208,18 +208,18 @@ export const appointmentResolver = {
         prisma.appointment.create({
           data: {
             patient: {
-              connect: existPatient,
+              connect: { id: existPatient.id },
             },
-            user: { connect: existUser },
+            user: { connect: { id: existUser.id } },
             startTime: arg.startTime,
             endTime: arg.endTime,
             price: 0,
             status: APPOINTMENT_TYPE.PENDING,
             note: arg.note,
+            resource: arg.resource,
           },
         }),
       ]);
-      console.log("createAppointment", createAppointment);
       return createAppointment;
     },
     updateAppointment: async (parent: undefined, args: any, context: any) => {
@@ -254,7 +254,7 @@ export const appointmentResolver = {
           },
           data: {
             patient: {
-              connect: existPatient,
+              connect: { id: existPatient.id },
             },
             startTime: arg.startTime,
             endTime: arg.endTime,

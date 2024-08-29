@@ -12,6 +12,7 @@ export const AppointmentType = gql`
     user: User
     status: String
     note: String
+    resource: String
   }
 
   input NewAppointmentInput {
@@ -20,6 +21,7 @@ export const AppointmentType = gql`
     endTime: String
     status: String
     note: String
+    resource: String
   }
   input UpdateAppointmentInput {
     id: String
@@ -46,13 +48,11 @@ export const AppointmentType = gql`
     ): [Appointment]
     totalGain(date: String): String
     totalGainDetailed(startTime: String, endTime: String): DetailedGain
-
   }
   type Mutation {
     createAppointment(input: NewAppointmentInput!): Appointment
     updateAppointment(input: UpdateAppointmentInput!): Appointment
     deleteAppointment(id: ID!): String
     cancelAll(date: String): String
-
   }
 `;
