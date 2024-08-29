@@ -6,6 +6,7 @@ import { generateToken, isTokenValid } from "../../middlewares/generateToken";
 import { LANGUAGE_TYPE, TOKEN_TYPE } from "@prisma/client";
 import { sandMail } from "../../utils/mailer";
 import { clientUrl, mailExpiration } from "../../config/vars";
+import { sendSms } from "../../utils/sms";
 import { format, formatISO } from "date-fns";
 
 interface AuthType {
@@ -37,6 +38,7 @@ export const authResolves = {
         throw new Error("LOGIN.BLOCKED");
       }
       const token = await generateTokenResponse(user.id);
+      // await sendSms(["+21652984142"], "Greetings from D7 API ")
       return { token, user };
     },
     register: async (parent: any, args: RegisterType) => {
@@ -60,10 +62,10 @@ export const authResolves = {
         },
       });
       const token = await generateTokenResponse(createdUser.id);
-      await sandMail({
+   /*    await sandMail({
         to: createdUser.email,
         text: `welcome to hero task`,
-      });
+      }); */
       return { token, user: createdUser };
     },
     logout: async (parent: any, args: any, contextValue: any) => {

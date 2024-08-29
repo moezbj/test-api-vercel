@@ -20,36 +20,51 @@ model User {
   startWork       String        @default("08:00:00")
   endWork         String        @default("18:00:00")
   slotDuration    String        @default("00:15:00")
+  withResoures    Boolean       @default(false)
   Fees            Fees[]
   Patient         Patient[]
 }
 
-model Patient {
+model Collaborator {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  email        String        @unique
-  name         String
-  age          String
-  insurance    String
-  phone        String
-  note         String
-  user         User          @relation(fields: [userId], references: [id])
-  userId       String        @db.ObjectId
+  Patient      Patient[]
   Appointments Appointment[]
+  email        String        @unique
+  firstName    String
+  lastName     String
+}
+
+model Patient {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  email          String        @unique
+  name           String
+  age            String
+  insurance      String
+  phone          String
+  note           String
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
+  Appointments   Appointment[]
+  Collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
+  collaboratorId String?       @db.ObjectId
 }
 
 model Appointment {
-  id        String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  patient   Patient          @relation(fields: [patientId], references: [id])
-  patientId String           @db.ObjectId
-  startTime DateTime
-  endTime   DateTime
-  note      String
-  price     Int
-  user      User             @relation(fields: [userId], references: [id])
-  userId    String           @db.ObjectId
-  status    APPOINTMENT_TYPE
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  patient        Patient          @relation(fields: [patientId], references: [id])
+  patientId      String           @db.ObjectId
+  startTime      DateTime
+  endTime        DateTime
+  note           String
+  price          Int
+  resource       String?
+  user           User             @relation(fields: [userId], references: [id])
+  userId         String           @db.ObjectId
+  status         APPOINTMENT_TYPE
+  Collaborator   Collaborator?    @relation(fields: [collaboratorId], references: [id])
+  collaboratorId String?          @db.ObjectId
 }
 
 model Fees {
