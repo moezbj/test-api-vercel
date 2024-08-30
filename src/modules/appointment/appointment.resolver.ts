@@ -51,7 +51,7 @@ export const appointmentResolver = {
                 },
               }
             : {}),
-            ...(arg.patient ? { patient: arg.patient } : {}),
+          ...(arg.patient ? { patient: arg.patient } : {}),
           ...(arg.status ? { status: arg.status } : {}),
         },
         include: {
@@ -324,17 +324,8 @@ export const appointmentResolver = {
       const formattedEnd = format(n, "yyyy-MM-dd");
       const formatTime = format(new Date().getTime(), "kk:mm:ss");
 
-      const currentTime = new Date(formatDate1);
-
-      // Add 5 minutes to the current time
-      const newTime = add(currentTime, { minutes: 1 });
-
-      // Format the new time
-      const formatTime1 = format(newTime, "kk:mm:ss");
-      console.log("formatTime", formatTime);
-      console.log("formatTime1", formatTime1);
-
       const time = isSameDay(new Date(), formatDate1) ? formatTime : "00:00:00";
+
       const query: {
         startTime: { gte: Date };
         endTime: { lte: Date };
