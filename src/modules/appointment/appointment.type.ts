@@ -31,6 +31,7 @@ export const AppointmentType = gql`
     price: Int
     status: String
     note: String
+    resource: String
   }
 
   type DetailedGain {

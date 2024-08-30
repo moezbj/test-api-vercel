@@ -1,7 +1,9 @@
 import { Appointment, APPOINTMENT_TYPE } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { getUser } from "../../middlewares/getUser";
-import { formatISO, format, isSameDay } from "date-fns";
+import { formatISO, format, isSameDay, startOfDay, endOfDay } from "date-fns";
+
+import { fromZonedTime } from "date-fns-tz";
 export const appointmentResolver = {
   Query: {
     appointments: async (
@@ -37,6 +39,9 @@ export const appointmentResolver = {
       const list = await prisma.appointment.findMany({
         where: {
           userId: arg.userId,
+          patient: {
+            userId: arg.userId,
+          },
           ...(args.startTime && args.endTime
             ? {
                 startTime: {
@@ -52,6 +57,7 @@ export const appointmentResolver = {
         },
         include: {
           patient: true,
+          user: true,
         },
       });
       return list;
@@ -90,11 +96,13 @@ export const appointmentResolver = {
         },
       });
       if (!existUser) throw new Error("id not provided");
+      // Convert the input date to UTC, considering the input time zone
+      const localDate = new Date(args.date);
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const utcDate = fromZonedTime(localDate, timeZone); // Use the correct time zone here
 
-      const formatDate1 = formatISO(args.date);
-      const n = new Date(formatDate1);
-      const formattedStart = format(n, "yyyy-MM-dd");
-      const formattedEnd = format(n, "yyyy-MM-dd");
+      const startOfDayUtc = startOfDay(utcDate);
+      const endOfDayUtc = endOfDay(utcDate);
 
       const [listAppointment, feesList] = await prisma.$transaction([
         prisma.appointment.findMany({
@@ -102,22 +110,23 @@ export const appointmentResolver = {
             userId: args.userId,
             status: APPOINTMENT_TYPE.DONE,
             startTime: {
-              gte: new Date(`${formattedStart}T00:00:00`),
+              gte: startOfDayUtc,
             },
             endTime: {
-              lte: new Date(`${formattedEnd}T23:59:59.999`),
+              lte: endOfDayUtc,
             },
           },
         }),
         prisma.fees.findMany({
           where: {
             date: {
-              gte: new Date(`${formattedEnd}T00:00:00`),
-              lte: new Date(`${formattedEnd}T23:59:59.999`),
+              gte: startOfDayUtc,
+              lte: endOfDayUtc,
             },
           },
         }),
       ]);
+
       const res = listAppointment.length
         ? listAppointment.map((e) => e.price).reduce((acc, item) => item + acc)
         : 0;
@@ -126,6 +135,7 @@ export const appointmentResolver = {
         : 0;
       return res - fees;
     },
+
     totalGainDetailed: async (
       parent: Record<string, any>,
       args: Record<string, any>,
@@ -259,13 +269,13 @@ export const appointmentResolver = {
             startTime: arg.startTime,
             endTime: arg.endTime,
             price: arg.price,
+            resource: arg.resource,
             status:
               arg.price > 0 ? APPOINTMENT_TYPE.DONE : APPOINTMENT_TYPE.PENDING,
             note: arg.note,
           },
         }),
       ]);
-      console.log("updateAppointment", updateAppointment);
       return updateAppointment;
     },
     deleteAppointment: async (parent: undefined, args: any, context: any) => {
