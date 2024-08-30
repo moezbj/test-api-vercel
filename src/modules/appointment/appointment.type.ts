@@ -22,6 +22,7 @@ export const AppointmentType = gql`
     status: String
     note: String
     resource: String
+    
   }
   input UpdateAppointmentInput {
     id: String
@@ -54,6 +55,6 @@ export const AppointmentType = gql`
     createAppointment(input: NewAppointmentInput!): Appointment
     updateAppointment(input: UpdateAppointmentInput!): Appointment
     deleteAppointment(id: ID!): String
-    cancelAll(date: String): String
+    cancelAll(date: String!, resource: String): String
   }
 `;

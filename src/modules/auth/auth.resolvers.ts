@@ -20,6 +20,7 @@ interface RegisterType {
   lastName: string;
   company?: string;
   password: string;
+  withResoures?:boolean;
 }
 
 export const authResolves = {
@@ -56,6 +57,7 @@ export const authResolves = {
           firstName: args.firstName,
           lastName: args.lastName,
           password: args.password,
+          withResoures:args.withResoures,
           language: "fr",
           startWork: "08:00:00",
           endWork: "18:00:00",

@@ -8,6 +8,7 @@ export const AuthType = gql`
       email: String!
       firstName: String!
       lastName: String!
+      withResoures:Boolean
     ): LoginResponse
     logout(token: String): String
     forgotPassword(email: String): String

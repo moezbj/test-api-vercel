@@ -1,7 +1,7 @@
 import { Appointment, APPOINTMENT_TYPE } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { getUser } from "../../middlewares/getUser";
-import { formatISO, format, isSameDay } from "date-fns";
+import { formatISO, format, isSameDay, add } from "date-fns";
 export const appointmentResolver = {
   Query: {
     appointments: async (
@@ -17,6 +17,7 @@ export const appointmentResolver = {
         },
       });
       if (!existUser) throw new Error("id not provided");
+
       const arg: {
         userId: string;
         patient?: { name: string };
@@ -50,7 +51,7 @@ export const appointmentResolver = {
                 },
               }
             : {}),
-          ...(arg.patient ? { patient: arg.patient } : {}),
+            ...(arg.patient ? { patient: arg.patient } : {}),
           ...(arg.status ? { status: arg.status } : {}),
         },
         include: {
@@ -95,18 +96,15 @@ export const appointmentResolver = {
       });
       if (!existUser) throw new Error("id not provided");
 
-      const adHour = new Date(args.date).setHours(new Date(args.date).getHours() + 1);
+      const adHour = new Date(args.date).setHours(
+        new Date(args.date).getHours() + 1
+      );
 
-
-      const startOfDay =new Date(adHour);
+      const startOfDay = new Date(adHour);
       startOfDay.setUTCHours(0, 0, 0, 0);
 
       const endOfDay = new Date(adHour);
       endOfDay.setUTCHours(23, 59, 59, 999);
-
-      console.log("test", adHour);
-      console.log("startOfDay", startOfDay);
-      console.log("endOfDay", endOfDay);
 
       const [listAppointment, feesList] = await prisma.$transaction([
         prisma.appointment.findMany({
@@ -204,9 +202,12 @@ export const appointmentResolver = {
       });
       if (!existUser) throw new Error("id not provided");
 
+      console.log("arg.colleagueId", arg.colleagueId);
+
       const existAppointment = await prisma.appointment.findFirst({
         where: {
           startTime: arg.startTime,
+          resource: arg.resource,
         },
       });
       if (existAppointment) throw new Error("existAppointment already exist");
@@ -231,6 +232,10 @@ export const appointmentResolver = {
             status: APPOINTMENT_TYPE.PENDING,
             note: arg.note,
             resource: arg.resource,
+          },
+          include: {
+            patient: true,
+            user: true,
           },
         }),
       ]);
@@ -278,6 +283,10 @@ export const appointmentResolver = {
               arg.price > 0 ? APPOINTMENT_TYPE.DONE : APPOINTMENT_TYPE.PENDING,
             note: arg.note,
           },
+          include: {
+            patient: true,
+            user: true,
+          },
         }),
       ]);
       return updateAppointment;
@@ -315,18 +324,38 @@ export const appointmentResolver = {
       const formattedEnd = format(n, "yyyy-MM-dd");
       const formatTime = format(new Date().getTime(), "kk:mm:ss");
 
+      const currentTime = new Date(formatDate1);
+
+      // Add 5 minutes to the current time
+      const newTime = add(currentTime, { minutes: 1 });
+
+      // Format the new time
+      const formatTime1 = format(newTime, "kk:mm:ss");
+      console.log("formatTime", formatTime);
+      console.log("formatTime1", formatTime1);
+
       const time = isSameDay(new Date(), formatDate1) ? formatTime : "00:00:00";
+      const query: {
+        startTime: { gte: Date };
+        endTime: { lte: Date };
+        resource?: string;
+      } = {
+        startTime: {
+          gte: new Date(`${formattedStart}T${time}`),
+        },
+        endTime: {
+          lte: new Date(`${formattedEnd}T23:59:59.999`),
+        },
+      };
+      if (args.resource) {
+        query.resource = args.resource;
+      }
+      console.log("query", query);
 
       const getAppointments = await prisma.appointment.findMany({
-        where: {
-          startTime: {
-            gte: new Date(`${formattedStart}T${time}`),
-          },
-          endTime: {
-            lte: new Date(`${formattedEnd}T23:59:59.999`),
-          },
-        },
+        where: { ...query },
       });
+      console.log("getAppointments", getAppointments);
 
       const [canceledAppointment] = await prisma.$transaction([
         prisma.appointment.updateMany({
