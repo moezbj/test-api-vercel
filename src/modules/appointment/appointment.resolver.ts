@@ -95,13 +95,16 @@ export const appointmentResolver = {
       });
       if (!existUser) throw new Error("id not provided");
 
-      const startOfDay = new Date(args.date);
+      const adHour = new Date(args.date).setHours(new Date(args.date).getHours() + 1);
 
+
+      const startOfDay =new Date(adHour);
       startOfDay.setUTCHours(0, 0, 0, 0);
-      const endOfDay = new Date(args.date);
+
+      const endOfDay = new Date(adHour);
       endOfDay.setUTCHours(23, 59, 59, 999);
 
-      console.log("test", new Date(args.date));
+      console.log("test", adHour);
       console.log("startOfDay", startOfDay);
       console.log("endOfDay", endOfDay);
 
