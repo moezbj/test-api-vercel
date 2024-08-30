@@ -1,9 +1,7 @@
 import { Appointment, APPOINTMENT_TYPE } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { getUser } from "../../middlewares/getUser";
-import { formatISO, format, isSameDay, startOfDay, endOfDay } from "date-fns";
-
-import { fromZonedTime } from "date-fns-tz";
+import { formatISO, format, isSameDay } from "date-fns";
 export const appointmentResolver = {
   Query: {
     appointments: async (
@@ -96,20 +94,16 @@ export const appointmentResolver = {
         },
       });
       if (!existUser) throw new Error("id not provided");
-      // Convert the input date to UTC, considering the input time zone
-      const localDate = new Date(args.date);
-      console.log("localDate", localDate);
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      console.log("timeZone", timeZone);
-      const utcDate = fromZonedTime(localDate, timeZone); // Use the correct time zone here
-      console.log("utcDate", utcDate);
+      const startOfDay = new Date(args.date);
 
-      const startOfDayUtc = startOfDay(utcDate);
-      const endOfDayUtc = endOfDay(utcDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date(args.date);
+      endOfDay.setUTCHours(23, 59, 59, 999);
 
-      console.log("startOfDay", endOfDayUtc);
-      console.log("endOfDay", endOfDayUtc);
+      console.log("test", new Date(args.date));
+      console.log("startOfDay", startOfDay);
+      console.log("endOfDay", endOfDay);
 
       const [listAppointment, feesList] = await prisma.$transaction([
         prisma.appointment.findMany({
@@ -117,18 +111,18 @@ export const appointmentResolver = {
             userId: args.userId,
             status: APPOINTMENT_TYPE.DONE,
             startTime: {
-              gte: startOfDayUtc,
+              gte: startOfDay,
             },
             endTime: {
-              lte: endOfDayUtc,
+              lte: endOfDay,
             },
           },
         }),
         prisma.fees.findMany({
           where: {
             date: {
-              gte: startOfDayUtc,
-              lte: endOfDayUtc,
+              gte: startOfDay,
+              lte: endOfDay,
             },
           },
         }),
