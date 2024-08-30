@@ -98,7 +98,9 @@ export const appointmentResolver = {
       if (!existUser) throw new Error("id not provided");
       // Convert the input date to UTC, considering the input time zone
       const localDate = new Date(args.date);
+      console.log("localDate", localDate);
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       console.log("timeZone", timeZone);
       const utcDate = fromZonedTime(localDate, timeZone); // Use the correct time zone here
       console.log("utcDate", utcDate);
