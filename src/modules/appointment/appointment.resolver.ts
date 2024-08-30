@@ -99,10 +99,15 @@ export const appointmentResolver = {
       // Convert the input date to UTC, considering the input time zone
       const localDate = new Date(args.date);
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log("timeZone", timeZone);
       const utcDate = fromZonedTime(localDate, timeZone); // Use the correct time zone here
+      console.log("utcDate", utcDate);
 
       const startOfDayUtc = startOfDay(utcDate);
       const endOfDayUtc = endOfDay(utcDate);
+
+      console.log("startOfDay", endOfDayUtc);
+      console.log("endOfDay", endOfDayUtc);
 
       const [listAppointment, feesList] = await prisma.$transaction([
         prisma.appointment.findMany({
