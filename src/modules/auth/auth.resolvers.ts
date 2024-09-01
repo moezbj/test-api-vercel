@@ -20,7 +20,8 @@ interface RegisterType {
   lastName: string;
   company?: string;
   password: string;
-  withResoures?:boolean;
+  withResoures?: boolean;
+  taxRegistration: string;
 }
 
 export const authResolves = {
@@ -50,21 +51,25 @@ export const authResolves = {
       if (user) {
         throw new Error("USER ALREADY EXISTS");
       }
-
+      const timeStart = new Date().setHours(8, 0, 0, 0);
+      const formattedStart = format(timeStart, "yyyy-MM-dd kk:mm:ss");
+      const timeEnd = new Date().setHours(18, 0, 0, 0);
+      const formattedEnd = format(timeEnd, "yyyy-MM-dd kk:mm:ss");
       const createdUser = await prisma.user.create({
         data: {
           email: args.email,
           firstName: args.firstName,
           lastName: args.lastName,
           password: args.password,
-          withResoures:args.withResoures,
+          withResoures: args.withResoures,
           language: "fr",
-          startWork: "08:00:00",
-          endWork: "18:00:00",
+          startWork: formattedStart,
+          endWork: formattedEnd,
+          taxRegistration: args.taxRegistration,
         },
       });
       const token = await generateTokenResponse(createdUser.id);
-   /*    await sandMail({
+      /*    await sandMail({
         to: createdUser.email,
         text: `welcome to hero task`,
       }); */
@@ -173,7 +178,6 @@ export const authResolves = {
       const formatDateStart = formatISO(args.startWork);
       const timeStart = new Date(formatDateStart);
       const formattedStart = format(timeStart, "yyyy-MM-dd kk:mm:ss");
-
 
       const formatDateEnd = formatISO(args.endWork);
       const timeEnd = new Date(formatDateEnd);

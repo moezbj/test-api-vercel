@@ -13,8 +13,9 @@ export const User = gql`
     startWork: String
     endWork: String
     slotDuration: String
-    withResoures:Boolean
-    freeTrailAcount:Boolean
+    withResoures: Boolean
+    freeTrailAcount: Boolean
+    taxRegistration: String
   }
   enum LANGUAGE_TYPE_USER {
     fr
