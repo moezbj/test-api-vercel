@@ -164,7 +164,7 @@ export const appointmentResolver = {
       const [listAppointment, feesList] = await prisma.$transaction([
         prisma.appointment.findMany({
           where: {
-            userId: args.userId,
+            userId: existUser.id,
             status: APPOINTMENT_TYPE.DONE,
             startTime: {
               gte: new Date(`${formattedStart}T00:00:00`),
@@ -176,6 +176,7 @@ export const appointmentResolver = {
         }),
         prisma.fees.findMany({
           where: {
+            userId:  existUser.id,
             date: {
               gte: new Date(`${formattedStart}T00:00:00`),
               lte: new Date(`${formattedEnd}T23:59:59.999`),
