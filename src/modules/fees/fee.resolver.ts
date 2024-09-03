@@ -78,12 +78,12 @@ export const FeeResolver = {
       const formatDate1 = formatISO(arg.date);
       const n = new Date(formatDate1);
       n.setDate(n.getDate());
-      const setStandard= n.setHours(2)
+      const setStandard = n.setHours(2);
 
       const [createFee] = await prisma.$transaction([
         prisma.fees.create({
           data: {
-            user: { connect: existUser },
+            user: { connect: { id: existUser.id } },
             date: formatISO(setStandard),
             amount: arg.amount,
             note: arg.note,
