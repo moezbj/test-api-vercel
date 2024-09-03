@@ -70,7 +70,7 @@ export const patientResolver = {
           data: {
             name: arg.name,
             email: arg.email,
-            age: arg.age,
+            birthDate: arg.birthDate,
             insurance: arg.insurance,
             phone: arg.phone,
             note: arg.note,
@@ -106,7 +106,7 @@ export const patientResolver = {
           data: {
             name: args.name,
             email: args.email,
-            age: args.age,
+            birthDate: args.birthDate,
             insurance: args.insurance,
             phone: args.phone,
             note: args.note,

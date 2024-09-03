@@ -8,7 +8,7 @@ export const PatientDefs = gql`
 
   input NewPatientInput {
     name: String
-    age: String
+    birthDate: String
     email: String
     phone: String
     insurance: String
@@ -21,7 +21,7 @@ export const PatientDefs = gql`
     updatePatient(
       id: String
       name: String
-      age: String
+      birthDate: String
       email: String
       phone: String
       insurance: String
@@ -34,7 +34,7 @@ export const PatientDefs = gql`
     id: String
     name: String
     note: String
-    age: String
+    birthDate: String
     email: String
     phone: String
     insurance: String
