@@ -82,6 +82,8 @@ export const patientResolver = {
       return createPatient;
     },
     updatePatient: async (parent: undefined, args: any, context: any) => {
+      const arg = args.input;
+
       const getIdUser = await getUser(context.authorization.split(" ")[1]);
       if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
@@ -101,16 +103,16 @@ export const patientResolver = {
       const [createPatient] = await prisma.$transaction([
         prisma.patient.update({
           where: {
-            id: args.id,
+            id: arg.id,
           },
           data: {
-            name: args.name,
-            email: args.email,
-            birthDate: args.birthDate,
-            insurance: args.insurance,
-            phone: args.phone,
-            note: args.note,
-            addressedBy: args.addressedBy,
+            name: arg.name,
+            email: arg.email,
+            birthDate: arg.birthDate,
+            insurance: arg.insurance,
+            phone: arg.phone,
+            note: arg.note,
+            addressedBy: arg.addressedBy,
           },
         }),
       ]);

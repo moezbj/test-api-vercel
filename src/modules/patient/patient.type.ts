@@ -28,7 +28,7 @@ export const PatientDefs = gql`
 
   type Mutation {
     createPatient(input: NewPatientInput!): Patient
-    updatePatient(input: UpdatePatientInput): Patient
+    updatePatient(input: UpdatePatientInput!): Patient
     deletePatient(id: ID!): String
   }
   type Patient {
