@@ -96,7 +96,7 @@ export const patientResolver = {
           name: args.id,
         },
       });
-      if (existPatient) throw new Error("patient already exist");
+      if (!existPatient) throw new Error("patient dosen't exist");
 
       const [createPatient] = await prisma.$transaction([
         prisma.patient.update({
