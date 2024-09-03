@@ -1,4 +1,4 @@
-import { gql } from 'graphql-modules'
+import { gql } from "graphql-modules";
 
 export const PatientDefs = gql`
   type Query {
@@ -13,6 +13,7 @@ export const PatientDefs = gql`
     phone: String
     insurance: String
     note: String
+    addressedBy: String
   }
 
   type Mutation {
@@ -25,9 +26,9 @@ export const PatientDefs = gql`
       phone: String
       insurance: String
       note: String
+      addressedBy: String
     ): Patient
     deletePatient(id: ID!): String
-
   }
   type Patient {
     id: String
@@ -38,5 +39,6 @@ export const PatientDefs = gql`
     phone: String
     insurance: String
     Appointments: [Appointment]
+    addressedBy: String
   }
-`
+`;

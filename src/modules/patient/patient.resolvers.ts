@@ -75,6 +75,7 @@ export const patientResolver = {
             phone: arg.phone,
             note: arg.note,
             userId: existUser.id,
+            addressedBy: arg.addressedBy,
           },
         }),
       ]);
@@ -109,6 +110,7 @@ export const patientResolver = {
             insurance: args.insurance,
             phone: args.phone,
             note: args.note,
+            addressedBy: args.addressedBy,
           },
         }),
       ]);
