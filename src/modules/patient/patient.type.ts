@@ -15,19 +15,20 @@ export const PatientDefs = gql`
     note: String
     addressedBy: String
   }
+  input UpdatePatientInput {
+    id: String
+    name: String
+    birthDate: String
+    email: String
+    phone: String
+    insurance: String
+    note: String
+    addressedBy: String
+  }
 
   type Mutation {
     createPatient(input: NewPatientInput!): Patient
-    updatePatient(
-      id: String
-      name: String
-      birthDate: String
-      email: String
-      phone: String
-      insurance: String
-      note: String
-      addressedBy: String
-    ): Patient
+    updatePatient(input: UpdatePatientInput): Patient
     deletePatient(id: ID!): String
   }
   type Patient {
