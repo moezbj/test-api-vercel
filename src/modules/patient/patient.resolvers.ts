@@ -114,5 +114,19 @@ export const patientResolver = {
       ]);
       return createPatient;
     },
+    deletePatient: async (parent: undefined, args: any, context: any) => {
+      const existPatient = await prisma.patient.findFirst({
+        where: {
+          id: args.id,
+        },
+      });
+      if (!existPatient) throw new Error("Patient does not exist");
+      await prisma.appointment.delete({
+        where: {
+          id: args.id,
+        },
+      });
+      return "deleted";
+    },
   },
 };

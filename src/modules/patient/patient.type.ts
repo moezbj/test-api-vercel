@@ -26,6 +26,8 @@ export const PatientDefs = gql`
       insurance: String
       note: String
     ): Patient
+    deletePatient(id: ID!): String
+
   }
   type Patient {
     id: String
