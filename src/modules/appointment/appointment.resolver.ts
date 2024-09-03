@@ -109,7 +109,7 @@ export const appointmentResolver = {
       const [listAppointment, feesList] = await prisma.$transaction([
         prisma.appointment.findMany({
           where: {
-            userId: args.userId,
+            userId: existUser.id,
             status: APPOINTMENT_TYPE.DONE,
             startTime: {
               gte: startOfDay,
@@ -121,6 +121,7 @@ export const appointmentResolver = {
         }),
         prisma.fees.findMany({
           where: {
+            userId: existUser.id,
             date: {
               gte: startOfDay,
               lte: endOfDay,
@@ -176,7 +177,7 @@ export const appointmentResolver = {
         }),
         prisma.fees.findMany({
           where: {
-            userId:  existUser.id,
+            userId: existUser.id,
             date: {
               gte: new Date(`${formattedStart}T00:00:00`),
               lte: new Date(`${formattedEnd}T23:59:59.999`),
@@ -319,7 +320,6 @@ export const appointmentResolver = {
       });
       if (!existUser) throw new Error("id not provided");
 
-      
       const formatDate1 = formatISO(args.date);
 
       // const n = new Date(formatDate1);
