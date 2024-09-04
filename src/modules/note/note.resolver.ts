@@ -63,16 +63,13 @@ export const NoteResolver = {
         },
       });
       if (!existUser) throw new Error("id not provided");
-      const formatDate1 = formatISO(arg.date);
-      const n = new Date(formatDate1);
-      n.setDate(n.getDate());
-      const setStandard = n.setHours(2);
 
       const [createNote] = await prisma.$transaction([
         prisma.note.create({
           data: {
             user: { connect: { id: existUser.id } },
             note: arg.note,
+            title: arg.title,
           },
         }),
       ]);
@@ -103,6 +100,7 @@ export const NoteResolver = {
           },
           data: {
             note: arg.note,
+            title: arg.title,
           },
         }),
       ]);
