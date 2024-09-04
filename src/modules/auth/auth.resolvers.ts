@@ -176,11 +176,15 @@ export const authResolves = {
       if (!existUser) throw new Error("user dosen't exist");
 
       const formatDateStart = formatISO(args.startWork);
-      const timeStart = new Date(formatDateStart);
+      const timeStart = new Date(formatDateStart).setHours(
+        new Date(formatDateStart).getHours() + 1
+      );
       const formattedStart = format(timeStart, "yyyy-MM-dd kk:mm:ss");
 
       const formatDateEnd = formatISO(args.endWork);
-      const timeEnd = new Date(formatDateEnd);
+      const timeEnd = new Date(formatDateEnd).setHours(
+        new Date(formatDateEnd).getHours() + 1
+      );
       const formattedEnd = format(timeEnd, "yyyy-MM-dd kk:mm:ss");
 
       const updatedUser = await prisma.user.update({
