@@ -76,15 +76,16 @@ export const FeeResolver = {
       });
       if (!existUser) throw new Error("id not provided");
       const formatDate1 = formatISO(arg.date);
-      const n = new Date(formatDate1);
-      n.setDate(n.getDate());
-      const setStandard = n.setHours(2);
+
+      const timeEnd = new Date(formatDate1).setHours(
+        new Date(formatDate1).getHours() + 1
+      );
 
       const [createFee] = await prisma.$transaction([
         prisma.fees.create({
           data: {
             user: { connect: { id: existUser.id } },
-            date: formatISO(setStandard),
+            date: new Date(timeEnd),
             amount: arg.amount,
             note: arg.note,
           },
