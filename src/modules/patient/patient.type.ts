@@ -14,6 +14,8 @@ export const PatientDefs = gql`
     insurance: String
     note: String
     addressedBy: String
+    startDate: String
+    endDate: String
   }
   input UpdatePatientInput {
     id: String
@@ -24,6 +26,8 @@ export const PatientDefs = gql`
     insurance: String
     note: String
     addressedBy: String
+    startDate: String
+    endDate: String
   }
 
   type Mutation {
@@ -41,5 +45,7 @@ export const PatientDefs = gql`
     insurance: String
     Appointments: [Appointment]
     addressedBy: String
+    startDate: String
+    endDate: String
   }
 `;

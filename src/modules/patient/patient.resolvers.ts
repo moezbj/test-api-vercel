@@ -76,6 +76,8 @@ export const patientResolver = {
             note: arg.note,
             userId: existUser.id,
             addressedBy: arg.addressedBy,
+            startDate: arg.startDate,
+            endDate: arg.endDate,
           },
         }),
       ]);
@@ -113,6 +115,8 @@ export const patientResolver = {
             phone: arg.phone,
             note: arg.note,
             addressedBy: arg.addressedBy,
+            startDate: arg.startDate,
+            endDate: arg.endDate,
           },
         }),
       ]);
