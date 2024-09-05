@@ -49,7 +49,6 @@ export const patientResolver = {
   Mutation: {
     createPatient: async (parent: undefined, args: any, context: any) => {
       const arg = args.input;
-
       const getIdUser = await getUser(context.authorization.split(" ")[1]);
       if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
@@ -65,19 +64,38 @@ export const patientResolver = {
         },
       });
       if (existPatient) throw new Error("user already exist");
+
+      const query: {
+        name: string;
+        birthDate: string;
+        email: string;
+        phone: string;
+        note: string;
+        insurance: string;
+        addressedBy: string;
+        startDate?: Date;
+        endDate?: Date;
+      } = {
+        name: arg.name,
+        birthDate: arg.birthDate,
+        email: arg.email,
+        phone: arg.phone,
+        note: arg.note,
+        insurance: arg.insurance,
+        addressedBy: arg.addressedBy,
+      };
+      if (arg.startDate) {
+        query.startDate = arg.startDate;
+      }
+      if (arg.endDate) {
+        query.endDate = arg.endDate;
+      }
+
       const [createPatient] = await prisma.$transaction([
         prisma.patient.create({
           data: {
-            name: arg.name,
-            email: arg.email,
-            birthDate: arg.birthDate,
-            insurance: arg.insurance,
-            phone: arg.phone,
-            note: arg.note,
+            ...query,
             userId: existUser.id,
-            addressedBy: arg.addressedBy,
-            startDate: arg.startDate,
-            endDate: arg.endDate,
           },
         }),
       ]);
@@ -102,7 +120,7 @@ export const patientResolver = {
       });
       if (!existPatient) throw new Error("patient dosen't exist");
 
-      const [createPatient] = await prisma.$transaction([
+      const [updatePatient] = await prisma.$transaction([
         prisma.patient.update({
           where: {
             id: arg.id,
@@ -120,7 +138,7 @@ export const patientResolver = {
           },
         }),
       ]);
-      return createPatient;
+      return updatePatient;
     },
     deletePatient: async (parent: undefined, args: any, context: any) => {
       const existPatient = await prisma.patient.findFirst({

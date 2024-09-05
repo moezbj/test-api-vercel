@@ -45,8 +45,8 @@ model Patient {
   email        String        @unique
   name         String
   birthDate    DateTime
-  startDate    DateTime
-  endDate      DateTime
+  startDate    DateTime?
+  endDate      DateTime?
   insurance    String
   phone        String
   addressedBy  String
