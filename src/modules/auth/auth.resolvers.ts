@@ -165,6 +165,30 @@ export const authResolves = {
       });
       return args.lang;
     },
+    updateCountry: async (
+      parent: any,
+      args: any,
+      contextValue: any
+    ) => {
+      const getIdUser = await getUser(contextValue.authorization.split(" ")[1]);
+      if (!getIdUser) throw new Error("id not provided");
+      const existUser = await prisma.user.findFirst({
+        where: {
+          id: getIdUser.sub?.toString(),
+        },
+      });
+      if (!existUser) throw new Error("user dosen't exist");
+      const u  = await prisma.user.update({
+        where: {
+          id: existUser.id,
+        },
+        data: {
+          country: args.country,
+          currency: args.currency,
+        },
+      });
+      return u;
+    },
     updateWork: async (parent: any, args: any, contextValue: any) => {
       const getIdUser = await getUser(contextValue.authorization.split(" ")[1]);
       if (!getIdUser) throw new Error("id not provided");

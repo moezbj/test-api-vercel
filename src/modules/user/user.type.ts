@@ -16,10 +16,17 @@ export const User = gql`
     withResoures: Boolean
     freeTrailAcount: Boolean
     taxRegistration: String
+    country: String
+    currency: TypeCurrency
   }
   enum LANGUAGE_TYPE_USER {
     fr
     en
     ar
+  }
+  type TypeCurrency {
+    name: String
+    native: String
+    symbol: String
   }
 `;

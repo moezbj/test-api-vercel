@@ -8,25 +8,26 @@ generator client {
 }
 
 model User {
-  id              String  @id @default(auto()) @map("_id") @db.ObjectId
-  isActive        Boolean @default(true)
-  freeTrailAcount Boolean @default(true)
-  email           String  @unique
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  isActive        Boolean       @default(true)
+  freeTrailAcount Boolean       @default(true)
+  email           String        @unique
   password        String
   firstName       String
   lastName        String
   taxRegistration String
-
-  Appointments Appointment[]
-  language     LANGUAGE_TYPE @default(fr)
-  startWork    String        @default("08:00:00")
-  endWork      String        @default("18:00:00")
-  slotDuration String        @default("00:15:00")
-  withResoures Boolean       @default(false)
-  Fees         Fees[]
-  Patient      Patient[]
-  Colleague    Colleague[]
-  Note         Note[]
+  Appointments    Appointment[]
+  language        LANGUAGE_TYPE @default(fr)
+  country         String?
+  currency        TypeCurrency?
+  startWork       String        @default("08:00:00")
+  endWork         String        @default("18:00:00")
+  slotDuration    String        @default("00:15:00")
+  withResoures    Boolean       @default(false)
+  Fees            Fees[]
+  Patient         Patient[]
+  Colleague       Colleague[]
+  Note            Note[]
 }
 
 model Colleague {
@@ -120,4 +121,10 @@ enum LANGUAGE_TYPE {
   fr
   en
   ar
+}
+
+type TypeCurrency {
+  name   String
+  native String
+  symbol String
 }

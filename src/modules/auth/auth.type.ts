@@ -8,14 +8,14 @@ export const AuthType = gql`
       email: String!
       firstName: String!
       lastName: String!
-      withResoures:Boolean
-      taxRegistration:String!
-
+      withResoures: Boolean
+      taxRegistration: String!
     ): LoginResponse
     logout(token: String): String
     forgotPassword(email: String): String
     resetPassword(password: String, confirm: String, token: String): String
     updateLanguages(lang: LANGUAGE_TYPE_INPUT): String
+    updateCountry(country: String, currency: CurrencyInput): User
     updateWork(
       startWork: String
       endWork: String
@@ -46,5 +46,11 @@ export const AuthType = gql`
     fr
     en
     ar
+  }
+  
+  input CurrencyInput {
+    name: String
+    native: String
+    symbol: String
   }
 `;
