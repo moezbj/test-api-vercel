@@ -44,6 +44,11 @@ export const authResolves = {
       return { token, user };
     },
     register: async (parent: any, args: RegisterType) => {
+      const userCreated = await prisma.user.findFirst();
+
+      if (userCreated) {
+        throw new Error("USER ALREADY EXISTS");
+      }
       const user = await prisma.user.findFirst({
         where: { email: args.email },
       });
@@ -103,7 +108,7 @@ export const authResolves = {
       });
 
       let info = await sandMail({
-        from: "contactmoez93@gmail.com",
+        from: "Office schedule",
         to: existUser.email,
         html: `
         <html lang="en">
@@ -112,11 +117,14 @@ export const authResolves = {
     <title>Clickable Link</title>
 </head>
 <body>
-    <a href="${clientUrl}/reset-password/${existUser.id}/${token}">Click here to reset your password</a>
+       <p>To reset your password, please click the link below:</p>
+        <a href="${clientUrl}/reset-password/${existUser.id}/${token}" style="color: #1a73e8; text-decoration: none;">Click here to reset your password</a>
+        <br>
+        <p>If the above link doesn't work, you can copy and paste this URL into your browser:</p>
+        <p>${clientUrl}/reset-password/${existUser.id}/${token}</p>
 </body>
 </html>`,
       });
-
       return "sent";
     },
     resetPassword: async (
@@ -165,11 +173,7 @@ export const authResolves = {
       });
       return args.lang;
     },
-    updateCountry: async (
-      parent: any,
-      args: any,
-      contextValue: any
-    ) => {
+    updateCountry: async (parent: any, args: any, contextValue: any) => {
       const getIdUser = await getUser(contextValue.authorization.split(" ")[1]);
       if (!getIdUser) throw new Error("id not provided");
       const existUser = await prisma.user.findFirst({
@@ -178,7 +182,7 @@ export const authResolves = {
         },
       });
       if (!existUser) throw new Error("user dosen't exist");
-      const u  = await prisma.user.update({
+      const u = await prisma.user.update({
         where: {
           id: existUser.id,
         },

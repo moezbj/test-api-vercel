@@ -1,7 +1,8 @@
-import nodemailer from 'nodemailer'
-import { Options } from 'nodemailer/lib/mailer'
+import nodemailer from "nodemailer";
+import { Options } from "nodemailer/lib/mailer";
 
-import { Mail } from '../config/vars'
+import { Mail } from "../config/vars";
+console.log("Mail", Mail);
 
 export const transport = nodemailer.createTransport({
   host: Mail.host,
@@ -10,8 +11,9 @@ export const transport = nodemailer.createTransport({
     user: Mail.user,
     pass: Mail.password,
   },
-})
+});
 
 export const sandMail = async (mailOptions: Options) => {
-  return await transport.sendMail(mailOptions)
-}
+  const res = await transport.sendMail(mailOptions);
+  return res;
+};

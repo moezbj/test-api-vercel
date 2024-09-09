@@ -21,6 +21,9 @@ export const AuthType = gql`
       endWork: String
       slotDuration: String
     ): updateWorkResponse
+    logout(token: String): String
+    forgotPassword(email: String): String
+    resetPassword(password: String, confirm: String, token: String): String
   }
 
   type Auth {
@@ -47,7 +50,7 @@ export const AuthType = gql`
     en
     ar
   }
-  
+
   input CurrencyInput {
     name: String
     native: String
