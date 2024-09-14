@@ -44,11 +44,11 @@ export const authResolves = {
       return { token, user };
     },
     register: async (parent: any, args: RegisterType) => {
-      const userCreated = await prisma.user.findFirst();
+     /*  const userCreated = await prisma.user.findFirst();
 
       if (userCreated) {
         throw new Error("USER ALREADY EXISTS");
-      }
+      } */
       const user = await prisma.user.findFirst({
         where: { email: args.email },
       });
