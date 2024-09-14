@@ -10,12 +10,12 @@ export const TokenResolver = {
         type: args.tokenType,
         user:args.userId,
       })
-      if (!t) throw new Error('Invalid token')
+      if (!t) throw new Error('INVALID_TOKEN')
 
       const user = await prisma.user.findFirst({
         where: { id: args.userId },
       })
-      if (!user) throw new Error('Invalid token')
+      if (!user) throw new Error('INVALID_TOKEN')
 
       const token = await generateTokenResponse(user.id)
 
