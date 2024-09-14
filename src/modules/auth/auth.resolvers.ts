@@ -102,7 +102,7 @@ export const authResolves = {
           email: args.email,
         },
       });
-      if (!existUser) throw new Error("user dosen't exist");
+      if (!existUser) throw new Error("USER_NOT_EXIST");
       const { token } = await generateToken(existUser.id, TOKEN_TYPE.FORGET, {
         days: mailExpiration,
       });
@@ -138,10 +138,10 @@ export const authResolves = {
           id: getIdUser.sub?.toString(),
         },
       });
-      if (!existUser) throw new Error("user dosen't exist");
+      if (!existUser) throw new Error("USER_NOT_EXIST");
 
       if (args.password !== args.confirm)
-        throw new Error("passwords do not match");
+        throw new Error("PASSWORD_NOT_MATCH");
 
       await prisma.user.update({
         where: { id: existUser.id },
