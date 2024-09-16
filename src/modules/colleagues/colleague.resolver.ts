@@ -115,11 +115,25 @@ export const colleagueResolver = {
         },
       });
       if (!existColleague) throw new Error("Colleague does not exist");
-      await prisma.appointment.deleteMany({
+
+      /* await prisma.appointment.deleteMany({
         where: {
           resource: args.id,
         },
       });
+      return "deleted"; */
+      await prisma.$transaction([
+        prisma.appointment.deleteMany({
+          where: {
+            resource: args.id,
+          },
+        }),
+        prisma.colleague.delete({
+          where: {
+            id: args.id,
+          },
+        }),
+      ]);
       return "deleted";
     },
   },
