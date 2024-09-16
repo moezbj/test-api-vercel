@@ -20,6 +20,8 @@ export const ColleagueDefs = gql`
       email: String
       phone: String
     ): Colleague
+    deleteColleague(id: ID!): String
+
   }
   type Colleague {
     id: String
