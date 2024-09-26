@@ -28,6 +28,8 @@ model User {
   Patient         Patient[]
   Colleague       Colleague[]
   Note            Note[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model Colleague {
@@ -39,6 +41,8 @@ model Colleague {
   email        String        @unique
   phone        String        @unique
   name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Patient {
@@ -57,6 +61,8 @@ model Patient {
   Appointments Appointment[]
   Colleague    Colleague?    @relation(fields: [colleagueId], references: [id])
   colleagueId  String?       @db.ObjectId
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Appointment {
@@ -84,6 +90,8 @@ model Fees {
   amount Int
   user   User     @relation(fields: [userId], references: [id])
   userId String   @db.ObjectId
+   createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Note {

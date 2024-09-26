@@ -18,6 +18,7 @@ export const User = gql`
     taxRegistration: String
     country: String
     currency: TypeCurrency
+    createdAt: Date
   }
   enum LANGUAGE_TYPE_USER {
     fr
