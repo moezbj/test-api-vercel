@@ -5,6 +5,9 @@ export const User = gql`
     user(token: String!): User
     users: [User]
   }
+  type Mutation {
+    toggleUserStatus(id: String): User
+  }
   type User {
     id: String
     firstName: String
@@ -19,7 +22,7 @@ export const User = gql`
     taxRegistration: String
     country: String
     currency: TypeCurrency
-    createdAt: Date
+    createdAt: String
   }
   enum LANGUAGE_TYPE_USER {
     fr
