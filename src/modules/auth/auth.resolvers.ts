@@ -44,7 +44,7 @@ export const authResolves = {
       return { token, user };
     },
     register: async (parent: any, args: RegisterType) => {
-     /*  const userCreated = await prisma.user.findFirst();
+      /*  const userCreated = await prisma.user.findFirst();
 
       if (userCreated) {
         throw new Error("USER ALREADY EXISTS");
@@ -140,8 +140,7 @@ export const authResolves = {
       });
       if (!existUser) throw new Error("USER_NOT_EXIST");
 
-      if (args.password !== args.confirm)
-        throw new Error("PASSWORD_NOT_MATCH");
+      if (args.password !== args.confirm) throw new Error("PASSWORD_NOT_MATCH");
 
       await prisma.user.update({
         where: { id: existUser.id },
@@ -149,7 +148,20 @@ export const authResolves = {
       });
       return "updated";
     },
+    refreshToken: async (parent: any, args: any, contextValue: any) => {
+      await isTokenValid({
+        token: args.refreshToken,
+        type: TOKEN_TYPE.REFRESH,
+        user: args.userId,
+      });
 
+      const user = await prisma.user.findFirst({ where: { id: args.user } });
+      if (!user) throw new Error("Invalid token");
+
+      const token = await generateTokenResponse(user.id);
+
+      return { user, token };
+    },
     updateLanguages: async (
       parent: any,
       args: { lang: LANGUAGE_TYPE },

@@ -3,6 +3,7 @@ import { gql } from "graphql-modules";
 export const User = gql`
   type Query {
     user(token: String!): User
+    users: [User]
   }
   type User {
     id: String

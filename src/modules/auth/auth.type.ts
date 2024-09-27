@@ -24,6 +24,8 @@ export const AuthType = gql`
     logout(token: String): String
     forgotPassword(email: String): String
     resetPassword(password: String, confirm: String, token: String): String
+    refreshToken(refreshToken: String, userId: String): LoginResponse
+
   }
 
   type Auth {
