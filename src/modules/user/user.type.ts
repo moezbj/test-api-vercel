@@ -23,6 +23,7 @@ export const User = gql`
     country: String
     currency: TypeCurrency
     createdAt: String
+    updatedAt: String
   }
   enum LANGUAGE_TYPE_USER {
     fr

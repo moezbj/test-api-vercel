@@ -20,6 +20,7 @@ export const userResolver = {
       const verifiedUser = await getUser(token);
       if (!verifiedUser) throw new Error("Invalid user");
       const users = await prisma.user.findMany();
+      console.log("users", users);
       return users;
     },
   },

@@ -27,7 +27,6 @@ interface RegisterType {
 export const authResolves = {
   Mutation: {
     login: async (parent: any, args: AuthType) => {
-      console.log("args", args);
       const user = await prisma.user.findFirst({
         where: { email: args.email },
       });
