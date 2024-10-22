@@ -15,7 +15,7 @@ export const patientResolver = {
           id: getIdUser.sub?.toString(),
         },
       });
-      if (!existUser) throw new Error("user dosen't exist");
+      if (!existUser) throw new Error("user doesn't exist");
 
       const list = await prisma.patient.findMany({
         where: {

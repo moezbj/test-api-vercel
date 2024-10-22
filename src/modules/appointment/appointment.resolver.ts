@@ -1,4 +1,4 @@
-import { Appointment, APPOINTMENT_TYPE } from "@prisma/client";
+import { APPOINTMENT_TYPE } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { getUser } from "../../middlewares/getUser";
 import { formatISO, format, isSameDay, add } from "date-fns";
@@ -36,10 +36,8 @@ export const appointmentResolver = {
       if (args.status) {
         arg.status = args.status;
       }
-
       let s;
       let e;
-
       if (args.startTime) {
         const adHourStart = new Date(args.startTime).setHours(
           new Date(args.startTime).getHours() + 1
@@ -69,10 +67,10 @@ export const appointmentResolver = {
           ...(arg.startTime && arg.endTime
             ? {
                 startTime: {
-                  gte: s, // Greater than or equal to startTime
+                  gte: s,
                 },
                 endTime: {
-                  lte: e, // Less than or equal to endTime
+                  lte: e,
                 },
               }
             : {}),

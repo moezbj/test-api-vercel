@@ -47,5 +47,6 @@ export const PatientDefs = gql`
     addressedBy: String
     startDate: String
     endDate: String
+    createdAt: String
   }
 `;

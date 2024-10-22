@@ -61,14 +61,14 @@ model Patient {
   Appointments Appointment[]
   Colleague    Colleague?    @relation(fields: [colleagueId], references: [id])
   colleagueId  String?       @db.ObjectId
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @default(now())
+  createdAt    DateTime?      @default(now())
+  updatedAt    DateTime?      @default(now())
 }
 
 model Appointment {
   id          String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @default(now())
+  createdAt   DateTime?         @default(now())
+  updatedAt   DateTime?         @default(now())
   patient     Patient          @relation(fields: [patientId], references: [id])
   patientId   String           @db.ObjectId
   startTime   DateTime
