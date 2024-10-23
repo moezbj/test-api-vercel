@@ -17,7 +17,7 @@ export const User = gql`
     startWork: String
     endWork: String
     slotDuration: String
-    withResoures: Boolean
+    withResources: Boolean
     freeTrailAcount: Boolean
     taxRegistration: String
     country: String

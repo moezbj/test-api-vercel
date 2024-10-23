@@ -23,7 +23,7 @@ model User {
   startWork       String        @default("08:00:00")
   endWork         String        @default("18:00:00")
   slotDuration    String        @default("00:15:00")
-  withResoures    Boolean       @default(false)
+  withResources    Boolean       @default(false)
   Fees            Fees[]
   Patient         Patient[]
   Colleague       Colleague[]

@@ -2,13 +2,13 @@ import { gql } from "graphql-modules";
 
 export const AuthType = gql`
   type Mutation {
-    login(password: String!, email: String!): LoginResponse
+    login(password: String!, email: String!, withResources: Boolean!): LoginResponse
     register(
       password: String!
       email: String!
       firstName: String!
       lastName: String!
-      withResoures: Boolean
+      withResources: Boolean
       taxRegistration: String!
     ): LoginResponse
     logout(token: String): String
@@ -25,7 +25,6 @@ export const AuthType = gql`
     forgotPassword(email: String): String
     resetPassword(password: String, confirm: String, token: String): String
     refreshToken(refreshToken: String, userId: String): LoginResponse
-
   }
 
   type Auth {

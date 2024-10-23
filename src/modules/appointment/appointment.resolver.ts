@@ -82,6 +82,8 @@ export const appointmentResolver = {
           user: true,
         },
       });
+
+      console.log("list", list);
       return list;
     },
     appointment: async (

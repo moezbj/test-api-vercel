@@ -12,6 +12,7 @@ import { format, formatISO } from "date-fns";
 interface AuthType {
   email: string;
   password: string;
+  withResources: boolean;
 }
 
 interface RegisterType {
@@ -20,7 +21,7 @@ interface RegisterType {
   lastName: string;
   company?: string;
   password: string;
-  withResoures?: boolean;
+  withResources?: boolean;
   taxRegistration: string;
 }
 
@@ -38,6 +39,11 @@ export const authResolves = {
       if (user && !user?.isActive) {
         throw new Error("LOGIN.BLOCKED");
       }
+
+      if (user.withResources !== args.withResources) {
+        throw new Error("LOGIN.INVALID");
+      }
+
       const token = await generateTokenResponse(user.id);
       // await sendSms(["+21652984142"], "Greetings from D7 API ")
       return { token, user };
@@ -65,7 +71,7 @@ export const authResolves = {
           firstName: args.firstName,
           lastName: args.lastName,
           password: args.password,
-          withResoures: args.withResoures,
+          withResources: args.withResources,
           language: "fr",
           startWork: formattedStart,
           endWork: formattedEnd,
