@@ -39,7 +39,6 @@ export const authResolves = {
       if (user && !user?.isActive) {
         throw new Error("LOGIN.BLOCKED");
       }
-
       if (user.withResources !== args.withResources) {
         throw new Error("LOGIN.INVALID");
       }

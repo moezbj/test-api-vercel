@@ -36,13 +36,12 @@ export const appointmentResolver = {
       if (args.status) {
         arg.status = args.status;
       }
-      let s;
-      let e;
+      let s = new Date();
+      let e = new Date();
       if (args.startTime) {
         const adHourStart = new Date(args.startTime).setHours(
           new Date(args.startTime).getHours() + 1
         );
-
         const startOfDay = new Date(adHourStart);
         startOfDay.setUTCHours(0, 0, 0, 0);
         s = startOfDay;
@@ -51,29 +50,23 @@ export const appointmentResolver = {
         const adHourEnd = new Date(args.endTime).setHours(
           new Date(args.endTime).getHours() + 1
         );
-
         const endOfDay = new Date(adHourEnd);
         endOfDay.setUTCHours(23, 59, 59, 999);
-
         e = endOfDay;
       }
-
       const list = await prisma.appointment.findMany({
         where: {
           userId: arg.userId,
           patient: {
             userId: arg.userId,
           },
-          ...(arg.startTime && arg.endTime
-            ? {
-                startTime: {
-                  gte: s,
-                },
-                endTime: {
-                  lte: e,
-                },
-              }
-            : {}),
+          OR: [
+            
+            {
+              startTime: { gte: s },
+              endTime: { lte: e },
+            },
+          ],
           ...(arg.patient ? { patient: arg.patient } : {}),
           ...(arg.status ? { status: arg.status } : {}),
         },
@@ -82,8 +75,6 @@ export const appointmentResolver = {
           user: true,
         },
       });
-
-      console.log("list", list);
       return list;
     },
     appointment: async (
