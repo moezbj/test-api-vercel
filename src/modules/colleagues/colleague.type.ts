@@ -29,5 +29,6 @@ export const ColleagueDefs = gql`
     email: String
     phone: String
     Appointments: [Appointment]
+    createdAt: String
   }
 `;
