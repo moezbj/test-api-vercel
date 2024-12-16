@@ -315,6 +315,21 @@ export const appointmentResolver = {
         },
       });
       if (!existAppointment) throw new Error("Appointment does not exist");
+      await prisma.appointment.delete({
+        where: {
+          id: args.id,
+        },
+        
+      });
+      return "deleted";
+    },
+    updateStatusAppointment: async (parent: undefined, args: any, context: any) => {
+      const existAppointment = await prisma.appointment.findFirst({
+        where: {
+          id: args.id,
+        },
+      });
+      if (!existAppointment) throw new Error("Appointment does not exist");
       await prisma.appointment.update({
         where: {
           id: args.id,
@@ -323,7 +338,7 @@ export const appointmentResolver = {
           status: APPOINTMENT_TYPE.CANCELED,
         },
       });
-      return "deleted";
+      return "updated";
     },
     cancelAll: async (parent: undefined, args: any, context: any) => {
       const getIdUser = await getUser(context.authorization.split(" ")[1]);
