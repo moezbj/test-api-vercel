@@ -297,7 +297,7 @@ export const appointmentResolver = {
             price: arg.price,
             resource: arg.resource,
             status:
-              arg.price > 0 ? APPOINTMENT_TYPE.DONE : APPOINTMENT_TYPE.PENDING,
+              arg.price >= 0 ? APPOINTMENT_TYPE.DONE : APPOINTMENT_TYPE.PENDING,
             note: arg.note,
           },
           include: {
