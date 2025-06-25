@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import { Options } from "nodemailer/lib/mailer";
 
 import { Mail } from "../config/vars";
-console.log("Mail", Mail);
 
 export const transport = nodemailer.createTransport({
   host: Mail.host,

@@ -45,7 +45,7 @@ export const appointmentResolver = {
         const startOfDay = new Date(adHourStart);
         startOfDay.setUTCHours(0, 0, 0, 0);
         s = startOfDay;
-        arg.startTime = s
+        arg.startTime = s;
       }
       if (args.endTime) {
         const adHourEnd = new Date(args.endTime).setHours(
@@ -54,8 +54,7 @@ export const appointmentResolver = {
         const endOfDay = new Date(adHourEnd);
         endOfDay.setUTCHours(23, 59, 59, 999);
         e = endOfDay;
-        arg.endTime = e
-
+        arg.endTime = e;
       }
       const list = await prisma.appointment.findMany({
         where: {
@@ -73,7 +72,6 @@ export const appointmentResolver = {
           user: true,
         },
       });
-      console.log("list", list);
       return list;
     },
     appointment: async (
@@ -219,8 +217,6 @@ export const appointmentResolver = {
       });
       if (!existUser) throw new Error("id not provided");
 
-      console.log("arg.colleagueId", arg.colleagueId);
-
       const existAppointment = await prisma.appointment.findFirst({
         where: {
           startTime: arg.startTime,
@@ -281,8 +277,10 @@ export const appointmentResolver = {
           id: arg.patientId,
         },
       });
+     
 
       if (!existPatient) throw new Error("patient already exist");
+  
       const [updateAppointment] = await prisma.$transaction([
         prisma.appointment.update({
           where: {
@@ -297,7 +295,9 @@ export const appointmentResolver = {
             price: arg.price,
             resource: arg.resource,
             status:
-              arg.price > 0 ? APPOINTMENT_TYPE.DONE : APPOINTMENT_TYPE.PENDING,
+              arg.price === 0 || arg.price !== existAppointment.price
+                ? APPOINTMENT_TYPE.DONE
+                : APPOINTMENT_TYPE.PENDING,
             note: arg.note,
           },
           include: {
@@ -319,11 +319,14 @@ export const appointmentResolver = {
         where: {
           id: args.id,
         },
-        
       });
       return "deleted";
     },
-    updateStatusAppointment: async (parent: undefined, args: any, context: any) => {
+    updateStatusAppointment: async (
+      parent: undefined,
+      args: any,
+      context: any
+    ) => {
       const existAppointment = await prisma.appointment.findFirst({
         where: {
           id: args.id,
