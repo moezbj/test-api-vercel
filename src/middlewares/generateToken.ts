@@ -25,30 +25,52 @@ export async function isTokenValid({
   type,
   deleteToken = true,
 }: {
-  token: string
-  user: string
-  type: TOKEN_TYPE
-  deleteToken?: boolean
+  token: string;
+  user: string;
+  type: TOKEN_TYPE;
+  deleteToken?: boolean;
 }) {
-  async function isValid(document: Token, token: string, deleteToken: boolean) {
-    if (!(await bcrypt.compare(token, document.token))) return undefined
-    if (deleteToken) {
-      await prisma.token.delete({ where: { id: document.id } })
+  async function isValid(document: any, token: string, deleteToken: boolean) {
+  
+    const isHashed = document.token.startsWith('$2b$') || document.token.startsWith('$2a$') || document.token.startsWith('$2y$');
+
+    let isMatch = false;
+    if (isHashed) {
+      isMatch = await bcrypt.compare(token, document.token);
+    } else {
+      isMatch = token === document.token;
     }
-    return document
+    
+    if (!isMatch) return undefined;
+
+    if (deleteToken) {
+      // 🚨 THE FIX: 
+      // Change 'delete' to 'deleteMany'. 
+      // deleteMany will NOT crash if the token was already deleted by a concurrent request!
+      await prisma.token.deleteMany({ where: { id: document.id } });
+    }
+    
+    return document;
   }
 
+  // 🚨 IMPORTANT PRISMA CHECK: 
+  // If your Prisma schema uses 'userId' instead of 'user', change this to:
+  // where: { userId: user, type }
   const documents = await prisma.token.findMany({
-    where: { user, type },
-  })
+    where: { user, type }, 
+  });
+
+  if (documents.length === 0) {
+    throw new Error('Invalid token: No tokens found in DB for this user/type');
+  }
 
   const validData = await Promise.all(
     documents.map((document) => isValid(document, token, deleteToken)),
-  )
+  );
 
-  const doc = validData.find(Boolean)
+  const doc = validData.find(Boolean);
 
-  if (!doc) throw new Error('Invalid token')
+  if (!doc) throw new Error('Invalid token: None of the found tokens matched the comparison');
 
-  return doc
+  return doc;
 }

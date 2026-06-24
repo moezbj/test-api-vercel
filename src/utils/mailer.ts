@@ -16,11 +16,9 @@ export const sandMail = async (mailOptions: Options) => {
   
   try {
     const res = await transport.sendMail(mailOptions);
-    console.log("✅ Email sent successfully! Response:", res.response);
     return res;
   } catch (error: any) {
     // 🚨 This will print the exact Gmail rejection reason to your console
-    console.error("❌ Nodemailer Error:", error.message); 
     throw error; 
   }
 };

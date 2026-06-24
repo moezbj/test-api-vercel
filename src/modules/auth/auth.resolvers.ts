@@ -110,6 +110,13 @@ export const authResolves = {
       const { token } = await generateToken(existUser.id, TOKEN_TYPE.FORGET, {
         days: mailExpiration,
       });
+      // 🚨 VERIFY IT WAS SAVED
+      const savedToken = await prisma.token.findFirst({
+        where: {
+          user: existUser.id, // Match your schema field name
+          type: TOKEN_TYPE.FORGET
+        }
+      });
 
       // 🚨 WRAP IN TRY/CATCH TO SEE THE EXACT ERROR
       try {
@@ -138,7 +145,6 @@ export const authResolves = {
       `,
         });
 
-        console.log("✅ Email sent successfully:", info);
         return "sent";
 
       } catch (error: any) {
