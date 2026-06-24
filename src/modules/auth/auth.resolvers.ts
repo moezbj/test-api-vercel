@@ -129,10 +129,10 @@ export const authResolves = {
         <body>
             <p>Bonjour,</p>
             <p>To reset your password, please click the link below:</p>
-            <a href="${clientUrl}/#/reset-password/${existUser.id}/${token}" style="color: #1a73e8; text-decoration: none; font-weight: bold;">Click here to reset your password</a>
+            <a href="${clientUrl}/reset-password/#/${existUser.id}/${token}" style="color: #1a73e8; text-decoration: none; font-weight: bold;">Click here to reset your password</a>
             <br><br>
             <p>If the above link doesn't work, you can copy and paste this URL into your browser:</p>
-            <p>${clientUrl}/#/reset-password/${existUser.id}/${token}</p>
+            <p>${clientUrl}/reset-password/#/${existUser.id}/${token}</p>
         </body>
         </html>
       `,
