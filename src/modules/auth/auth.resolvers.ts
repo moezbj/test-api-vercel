@@ -102,34 +102,50 @@ export const authResolves = {
     },
     forgotPassword: async (parent: any, args: { email: string }) => {
       const existUser = await prisma.user.findFirst({
-        where: {
-          email: args.email,
-        },
+        where: { email: args.email },
       });
+
       if (!existUser) throw new Error("USER_NOT_EXIST");
+
       const { token } = await generateToken(existUser.id, TOKEN_TYPE.FORGET, {
         days: mailExpiration,
       });
 
-      let info = await sandMail({
-        from: "Office schedule",
-        to: existUser.email,
-        html: `
+      // 🚨 WRAP IN TRY/CATCH TO SEE THE EXACT ERROR
+      try {
+        let info = await sandMail({
+          // 🚨 CRITICAL FIX: 
+          // The 'from' MUST be your actual Gmail address. 
+          // You can format it as "Display Name <actual-email@gmail.com>"
+          from: '"Office Schedule" <YOUR_ACTUAL_GMAIL@gmail.com>', // <-- REPLACE THIS WITH YOUR GMAIL
+          to: existUser.email,
+          subject: "Réinitialisation de votre mot de passe", // Added a subject line
+          html: `
         <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Clickable Link</title>
-</head>
-<body>
-       <p>To reset your password, please click the link below:</p>
-        <a href="${clientUrl}/reset-password/${existUser.id}/${token}" style="color: #1a73e8; text-decoration: none;">Click here to reset your password</a>
-        <br>
-        <p>If the above link doesn't work, you can copy and paste this URL into your browser:</p>
-        <p>${clientUrl}/reset-password/${existUser.id}/${token}</p>
-</body>
-</html>`,
-      });
-      return "sent";
+        <head>
+            <meta charset="UTF-8">
+            <title>Reset Password</title>
+        </head>
+        <body>
+            <p>Bonjour,</p>
+            <p>To reset your password, please click the link below:</p>
+            <a href="${clientUrl}/#/reset-password/${existUser.id}/${token}" style="color: #1a73e8; text-decoration: none; font-weight: bold;">Click here to reset your password</a>
+            <br><br>
+            <p>If the above link doesn't work, you can copy and paste this URL into your browser:</p>
+            <p>${clientUrl}/#/reset-password/${existUser.id}/${token}</p>
+        </body>
+        </html>
+      `,
+        });
+
+        console.log("✅ Email sent successfully:", info);
+        return "sent";
+
+      } catch (error: any) {
+        // This will print the exact Nodemailer error to your console
+        console.error("❌ Error sending email:", error.message || error);
+        throw new Error("Failed to send password reset email. Please check server logs.");
+      }
     },
     resetPassword: async (
       parent: any,
